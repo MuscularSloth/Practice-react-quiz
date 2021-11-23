@@ -1,23 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect} from "react";
+import {getQuizAsyncAction} from "./redux/asyncActions";
+import GetNameBlock from "./components/GetNameBlock";
+import QuizHeaderBlock from "./components/QuizHeaderBlock";
+
+import { Box } from "@chakra-ui/react"
+import QuizBodyBlock from "./components/QuizBodyBlock";
+
+
 
 function App() {
+
+  const quizInfo = useSelector(state => state.quizReducer);
+  const userInfo = useSelector(state => state.userReducer);
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+      if(quizInfo.quiz.length < 1){
+          dispatch(getQuizAsyncAction())
+      }
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Box
+            w="100%"
+            p={4}
         >
-          Learn React
-        </a>
-      </header>
+            <QuizHeaderBlock />
+        </Box>
+        <Box>
+            {userInfo.userName ?
+                <QuizBodyBlock />
+                :
+                <GetNameBlock />
+            }
+        </Box>
     </div>
   );
 }

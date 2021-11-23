@@ -1,0 +1,10 @@
+export const GET_QUIZ_REQUEST = "QUIZ/GETREQUEST";
+export const GET_QUIZ_SUCCESS = "QUIZ/GETSUCCESS";
+export const GET_QUIZ_FAILURE = "QUIZ/GETFAILURE";
+
+export const SET_USER_NAME = "USER/SETNAME"
+
+export const START_TIMER = "TIMER/START"
+export const CHANGE_TIMER = "TIMER/CHANGE"
+export const STOP_TIMER = "TIMER/STOP"
+export const RESET_TIMER = "TIMER/RESET"
