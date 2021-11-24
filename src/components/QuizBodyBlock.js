@@ -2,22 +2,34 @@ import React, {useEffect, useState} from 'react';
 import {Box, Button, Text} from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
 import QuizContainer from "./quiz/QuizContainer";
-import {changeTimerAction, resetTimerAction, startTimerAction, stopTimerAction} from "../redux/actions";
+import {
+    addScoreboardDataAction,
+    changeTimerAction,
+    resetTimerAction,
+    startTimerAction,
+    stopTimerAction
+} from "../redux/actions";
+import ScoreBoard from "./ScoreBoard";
 
 function QuizBodyBlock(props) {
 
     const dispatch = useDispatch();
     const quizInfo = useSelector(state => state.quizReducer);
     const timerInfo = useSelector(state => state.timerReducer);
+    const userInfo = useSelector(state => state.userReducer);
 
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [isQuizStarted, setIsQuizStarted] = useState(false);
     const [currentScore, setCurrentScore] = useState(0);
     const [intervalID, setIntervalID] = useState(null);
+    const [showResults, setShowResults] = useState(false);
+    const [switchStep, setSwitchStep] = useState(false);
+
 
     const handleQuizStart = () => {
         dispatch(startTimerAction());
         setIsQuizStarted(true);
+        setShowResults(false);
         setCurrentScore(0);
         setCurrentQuestion(0);
 
@@ -36,7 +48,7 @@ function QuizBodyBlock(props) {
         if(e.target.innerText === quizInfo.quiz[currentQuestion].correct_answer){
             setCurrentScore(currentScore+(timerInfo.currentTimer * 100));
         }
-        nextQuestion();
+        setSwitchStep(true)
     }
 
     const nextQuestion = () =>{
@@ -50,7 +62,9 @@ function QuizBodyBlock(props) {
 
     const stopQuiz = () => {
         setIsQuizStarted(false);
+        setShowResults(true);
         dispatch(stopTimerAction());
+        dispatch(addScoreboardDataAction({id: Date.now(), name: userInfo.userName, score: currentScore}))
         clearInterval(intervalID);
     }
 
@@ -60,6 +74,15 @@ function QuizBodyBlock(props) {
             nextQuestion();
         }
     }, [timerInfo.currentTimer])
+
+    useEffect(()=>{
+        if(switchStep){
+            nextQuestion();
+            setSwitchStep(false)
+        }
+    }, [switchStep])
+
+
 
 
 
@@ -76,6 +99,10 @@ function QuizBodyBlock(props) {
                 </>
                 :
                 <Button colorScheme="blue" onClick={handleQuizStart}>Start Quiz</Button>
+            }
+
+            {showResults &&
+                <ScoreBoard />
             }
         </Box>
     );
